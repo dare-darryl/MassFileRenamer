@@ -11,11 +11,29 @@ function get-all-files ($filter){
 }
 
 function get-input {
-    $input = Read-Host -Prompt "Filenames to search"
+    $input = Read-Host -Prompt "Filenames to search" 
+
+    if ($input -eq "") {
+        Write-Host "No search detected" -ForegroundColor Red
+        $input = get-input
+    }
+
     return $input
+}
+
+function print-filenames($files){
+    Write-Host "Length: " + $files.length
+    for($i = 0; $i -lt $files.Length; $i++)
+    {
+        Write-Host $files[$i].Name -ForegroundColor Yellow
+    }
 }
 
 # Initial Filtering
 $input = get-input
+Write-Host
 
-get-all-files("*" + $input +"*")
+$files = get-all-files("*" + $input +"*")
+
+Write-Host "Files Found:" -ForegroundColor Green
+print-filenames($files)
