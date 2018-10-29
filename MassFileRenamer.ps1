@@ -5,7 +5,7 @@ function get-all-files ($filter){
     $files = Get-Item *
     
     # Removing all directories from list
-    $files = $files | Where-Object {($_.attributes -notlike "Directory") -and ($_.Name -like $filter)}
+    $files = $files | Where-Object {($_.attributes -notlike "Directory") -and ($_.Name -clike $filter)}
     
     return $files
 }
