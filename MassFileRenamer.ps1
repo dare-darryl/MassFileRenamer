@@ -3,7 +3,7 @@
 function get-all-files ($filter){
     # Selecting all files in directory
     $files = Get-Item *
-
+    
     # Removing all directories from list
     $files = $files | Where-Object {($_.attributes -notlike "Directory") -and ($_.Name -like $filter)}
     
@@ -21,8 +21,7 @@ function get-input {
     return $input
 }
 
-function print-filenames($files){
-    Write-Host "Length: " + $files.length
+function print-filenames($files, $input){
     for($i = 0; $i -lt $files.Length; $i++)
     {
         Write-Host $files[$i].Name -ForegroundColor Yellow
@@ -33,7 +32,7 @@ function print-filenames($files){
 $input = get-input
 Write-Host
 
-$files = get-all-files("*" + $input +"*")
+$files = @(get-all-files("*" + $input +"*"))
 
 Write-Host "Files Found:" -ForegroundColor Green
 print-filenames($files)
