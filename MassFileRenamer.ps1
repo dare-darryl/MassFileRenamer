@@ -25,7 +25,6 @@ function print-filenames($files, $input){
     for($i = 0; $i -lt $files.Length; $i++)
     {
         Write-Host $files[$i].Name -ForegroundColor Yellow
-        $files[$i].Name.Split($input.ToString())
     }
 }
 
@@ -36,4 +35,4 @@ Write-Host
 $files = @(get-all-files("*" + $input +"*"))
 
 Write-Host "Files Found:" -ForegroundColor Green
-print-filenames($files, $input)
+print-filenames($files)
