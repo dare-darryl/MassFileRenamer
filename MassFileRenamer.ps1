@@ -25,6 +25,16 @@ function get-input {
 }
 
 function print-filenames{
+    param($files)
+
+    for($i = 0; $i -lt $files.Length; $i++)
+    {
+        Write-Host $files[$i].Name
+    }
+}
+
+
+function print-filenames-edit{
     param($files, $fileSearch, $replaceItem)
 
     for($i = 0; $i -lt $files.Length; $i++)
@@ -33,7 +43,10 @@ function print-filenames{
         $filenamefrag = $temp -csplit $fileSearch
         
         Write-Host -NoNewline $filenamefrag[0] -ForegroundColor Yellow
-        Write-Host -NoNewline $replaceItem -ForegroundColor Red
+
+        if ($filenamefrag.Length -ne 1){
+            Write-Host -NoNewline $replaceItem -ForegroundColor Red
+        }
 
         for($j = 1; $j -lt $filenamefrag.Length; $j++)
         {
@@ -52,10 +65,17 @@ function print-filenames{
 function rename-filenames{
     param($files, $fileSearch, $replaceItem)
 
+    Write-Host "Renamed:" -ForegroundColor Green
+
     for($i = 0; $i -lt $files.Length; $i++)
     {
         $temp = $files[$i].Name
         $filenamefrag = $temp -csplit $fileSearch
+
+        if ($filenamefrag.Length -eq 1){
+            Write-Host $files[$i].Name -ForegroundColor Cyan
+            continue
+        }
 
         $rebuiltFilename = $filenamefrag[0]
         $rebuiltFilename += $replaceItem
@@ -71,7 +91,7 @@ function rename-filenames{
         }
 
         $files[$i] | Rename-Item -NewName $rebuiltFilename
-        Write-Host "Renamed: $rebuiltFilename"
+        Write-Host "$rebuiltFilename" -ForegroundColor Cyan
     }
 }
 
@@ -79,19 +99,26 @@ function rename-filenames{
 
 # Initial Filtering
 $fileSearch = get-input "Filenames to search"
-Write-Host Input is $fileSearch
+Write-Host
 
 $files = @(get-all-files("*" + $fileSearch +"*"))
 
 Write-Host "Files Found:" -ForegroundColor Green
-print-filenames $files $fileSearch $fileSearch
+print-filenames $files
+Write-Host
+
+
+# Get Proposed Change
+$toReplace = get-input "String to replace"
+print-filenames-edit $files $toReplace $toReplace
 
 # Read Proposed Changes
 Write-Host
-$replace = Read-Host "String to replace with"
+$replace = Read-Host "Replacement"
 Write-Host "Files to Rename:" -ForegroundColor Green
-print-filenames $files $fileSearch $replace
+print-filenames-edit $files $toReplace $replace
 Write-Host
+
 
 # Confirm Changes
 while($true){
@@ -107,5 +134,6 @@ if ($confirmrn -like 'n*') {
     exit
 }
 
+
 # Write Changes
-rename-filenames $files $fileSearch $replace
+rename-filenames $files $toReplace $replace
